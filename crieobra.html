@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="icone.png">
+<title>NeoPlasticismo</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+    --red:#ed1c24;
+    --blue:#2449d8;
+    --yellow:#f5c400;
+    --black:#111;
+    --white:#fff;
+    --cream:#faf9f5;
+    --border:#deddd8;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--cream);
+    color:var(--black);
+    min-height:100vh;
+}
+
+
+/* =========================
+   MENU EM IMAGEM
+   ========================= */
+
+.image-menu{
+    position:relative;
+    width:100%;
+    height:auto;
+    padding:0;
+    margin:0;
+    border:0;
+    display:block;
+    line-height:0;
+}
+
+.image-menu img{
+    display:block;
+    width:100%;
+    height:auto;
+    margin:0;
+    padding:0;
+}
+
+.menu-link{
+    position:absolute;
+    top:0;
+    height:100%;
+    display:block;
+    z-index:10;
+}
+
+
+/* INÍCIO */
+.menu-link.inicio{
+    left:44.87%;
+    width:10.98%;
+}
+
+
+/* OBRAS */
+.menu-link.obras{
+    left:55.85%;
+    width:11.35%;
+}
+
+
+/* MOVIMENTO */
+.menu-link.movimento{
+    left:67.20%;
+    width:16.60%;
+}
+
+
+/* CRIE SUA OBRA */
+.menu-link.crie{
+    left:83.80%;
+    width:16.20%;
+}
+
+
+/* =========================
+   ÁREA DE CRIAÇÃO
+   ========================= */
+
+.app{
+    display:grid;
+    grid-template-columns:250px minmax(400px,1fr) 280px;
+    gap:22px;
+    padding:22px;
+    min-height:calc(100vh - 100px);
+}
+
+.panel{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:5px;
+    overflow:hidden;
+}
+
+.panel-section{
+    padding:20px;
+    border-bottom:0
+}
+
+.panel-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:13px;
+    font-weight:900;
+    margin-bottom:18px
+}
+
+.minus{
+    font-size:18px
+}
+
+.tools-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px
+}
+
+.tool{
+    border:1px solid #ddd;
+    background:white;
+    height:95px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.15s
+}
+
+.tool:hover{
+    border-color:#111;
+    transform:translateY(-2px)
+}
+
+.tool-icon{
+    width:38px;
+    height:38px;
+    border:2px solid #222;
+    margin-bottom:8px
+}
+
+.tool-icon.rectangle{
+    width:48px;
+    height:30px
+}
+
+.tool-icon.vertical{
+    width:3px;
+    height:40px;
+    background:#111;
+    border:none
+}
+
+.tool-icon.horizontal{
+    width:40px;
+    height:3px;
+    background:#111;
+    border:none
+}
+
+.tool span{
+    font-size:10px;
+    font-weight:bold
+}
+
+.colors{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px
+}
+
+.color{
+    height:62px;
+    border:1px solid #bbb;
+    cursor:pointer;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    padding-bottom:7px;
+    font-size:9px;
+    font-weight:bold
+}
+
+.color.red{
+    background:var(--red)
+}
+
+.color.blue{
+    background:var(--blue)
+}
+
+.color.yellow{
+    background:var(--yellow)
+}
+
+.color.black{
+    background:#111;
+    color:white
+}
+
+.color.white{
+    background:white
+}
+
+.color.selected{
+    outline:3px solid #111;
+    outline-offset:2px
+}
+
+.editor-area{
+    display:flex;
+    flex-direction:column;
+    min-width:0
+}
+
+.canvas-wrapper{
+    flex:1;
+    min-height:600px;
+    background:radial-gradient(#ddd 1px,transparent 1px);
+    background-size:12px 12px;
+    padding:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center
+}
+
+#artboard{
+    width:min(100%,850px);
+    aspect-ratio:4/3;
+    background:white;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 5px 25px rgba(0,0,0,.08);
+    border:1px solid #ddd;
+    user-select:none
+}
+
+.element{
+    position:absolute;
+    cursor:move
+}
+
+.shape{
+    border:4px solid #111
+}
+
+.line{
+    background:#111
+}
+
+.line.vertical{
+    width:5px
+}
+
+.line.horizontal{
+    height:5px
+}
+
+.element.selected{
+    outline:2px dashed #111;
+    outline-offset:5px
+}
+
+.resize-handle{
+    position:absolute;
+    width:12px;
+    height:12px;
+    right:-7px;
+    bottom:-7px;
+    background:white;
+    border:2px solid #111;
+    cursor:nwse-resize;
+    display:none;
+    z-index:5
+}
+
+.element.selected .resize-handle{
+    display:block
+}
+
+.info-box{
+    background:white;
+    border:1px solid var(--border);
+    padding:18px;
+    display:flex;
+    gap:18px;
+    margin-top:15px
+}
+
+.info-icon{
+    width:55px;
+    height:55px;
+    border:3px solid #111;
+    background:linear-gradient(
+        90deg,
+        var(--red) 0 50%,
+        var(--yellow) 50%
+    );
+    flex-shrink:0
+}
+
+.info h3{
+    font-size:14px;
+    margin-bottom:6px
+}
+
+.info p{
+    font-size:12px;
+    line-height:1.5
+}
+
+.action{
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    background:white;
+    margin-bottom:10px;
+    text-align:left;
+    font-weight:bold;
+    font-size:12px;
+    cursor:pointer
+}
+
+.action:hover{
+    background:#f5f5f5
+}
+
+.download{
+    width:100%;
+    background:#111;
+    color:white;
+    border:none;
+    padding:20px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer
+}
+
+.download:hover{
+    background:#222
+}
+
+.layer{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:10px 0;
+    border-bottom:0;
+    font-size:11px;
+    cursor:pointer
+}
+
+.layer-color{
+    width:20px;
+    height:20px;
+    border:1px solid #999
+}
+
+.layer-name{
+    flex:1
+}
+
+.layer button{
+    border:none;
+    background:none;
+    cursor:pointer;
+    font-size:15px
+}
+
+.tip{
+    background:#faf9f5;
+    border:1px solid #ddd;
+    padding:15px;
+    font-size:11px;
+    line-height:1.5
+}
+
+.mobile-toolbar{
+    display:none
+}
+
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media(max-width:1100px){
+
+    .app{
+        grid-template-columns:210px minmax(350px,1fr);
+    }
+
+    .right-panel{
+        display:block;
+        grid-column:1 / -1;
+        width:100%;
+    }
+}
+
+
+/* =========================
+   CELULAR
+   ========================= */
+
+@media(max-width:750px){
+
+    .app{
+        display:block;
+        padding:10px
+    }
+
+    .left-panel{
+        display:none
+    }
+
+    .editor-area{
+        width:100%
+    }
+
+    .canvas-wrapper{
+        padding:8px;
+        min-height:auto;
+        height:auto
+    }
+
+    #artboard{
+        width:100%;
+        aspect-ratio:1/1
+    }
+
+    .mobile-toolbar{
+        display:flex;
+        position:sticky;
+        bottom:0;
+        z-index:100;
+        background:white;
+        border:1px solid #ddd;
+        padding:8px;
+        gap:7px;
+        overflow-x:auto;
+        margin-top:10px
+    }
+
+    .mobile-tool{
+        min-width:58px;
+        height:58px;
+        background:white;
+        border:1px solid #ccc;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:9px;
+        font-weight:bold;
+        cursor:pointer
+    }
+
+    .mobile-tool.red{
+        background:var(--red)
+    }
+
+    .mobile-tool.blue{
+        background:var(--blue)
+    }
+
+    .mobile-tool.yellow{
+        background:var(--yellow)
+    }
+
+    .mobile-tool.black{
+        background:#111;
+        color:white
+    }
+
+    .mobile-tool.white{
+        background:white
+    }
+
+    .info-box{
+        margin-top:10px
+    }
+
+    .shape{
+        border-width:3px
+    }
+
+    .line.vertical{
+        width:4px
+    }
+
+    .line.horizontal{
+        height:4px
+    }
+
+    .right-panel{
+        display:block;
+        margin-top:10px;
+        width:100%;
+    }
+
+    .right-panel .panel-section{
+        padding:16px
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="image-menu">
+
+    <img src="menu.png" alt="Menu Neo Plasticismo">
+
+    <a href="index.html#1" class="menu-link inicio" aria-label="Início"></a>
+
+    <a href="index.html#2" class="menu-link obras" aria-label="Obras"></a>
+
+    <a href="index.html#3" class="menu-link movimento" aria-label="Movimento"></a>
+
+    <a href="crieobra.html" class="menu-link crie" aria-label="Crie sua obra"></a>
+
+
+</header>
+
+<main class="app">
+
+    <aside class="panel left-panel">
+        <div class="panel-section">
+            <div class="panel-title">FORMAS <span class="minus">−</span></div>
+            <div class="tools-grid">
+                <button class="tool" onclick="addShape('square')">
+                    <div class="tool-icon"></div>
+                    <span>QUADRADO</span>
+                </button>
+                <button class="tool" onclick="addShape('rectangle')">
+                    <div class="tool-icon rectangle"></div>
+                    <span>RETÂNGULO</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-title">LINHAS <span class="minus">−</span></div>
+            <div class="tools-grid">
+                <button class="tool" onclick="addLine('vertical')">
+                    <div class="tool-icon vertical"></div>
+                    <span>VERTICAL</span>
+                </button>
+                <button class="tool" onclick="addLine('horizontal')">
+                    <div class="tool-icon horizontal"></div>
+                    <span>HORIZONTAL</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-title">CORES <span class="minus">−</span></div>
+            <div class="colors">
+                <button class="color red selected" onclick="selectColor('#ed1c24',this)">VERMELHO</button>
+                <button class="color blue" onclick="selectColor('#2449d8',this)">AZUL</button>
+                <button class="color yellow" onclick="selectColor('#f5c400',this)">AMARELO</button>
+                <button class="color black" onclick="selectColor('#111111',this)">PRETO</button>
+                <button class="color white" onclick="selectColor('#ffffff',this)">BRANCO</button>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="tip">
+                <strong>DICA</strong><br><br>
+                Use as formas e linhas para criar sua composição inspirada no neoplasticismo.
+                <br><br><strong>Menos é mais!</strong>
+            </div>
+        </div>
+    </aside>
+
+    <section class="editor-area">
+        <div class="canvas-wrapper">
+            <div id="artboard"></div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-icon"></div>
+            <div class="info">
+                <h3>NEOPLASTICISMO</h3>
+                <p>
+                    Movimento artístico que busca a essência da forma e da cor.
+                    Composição com elementos simples, cores primárias e linhas retas.
+                </p>
+            </div>
+        </div>
+
+        <div class="mobile-toolbar">
+            <button class="mobile-tool" onclick="addShape('square')">□</button>
+            <button class="mobile-tool" onclick="addShape('rectangle')">▭</button>
+            <button class="mobile-tool" onclick="addLine('vertical')">|</button>
+            <button class="mobile-tool" onclick="addLine('horizontal')">—</button>
+            <button class="mobile-tool red" onclick="selectColor('#ed1c24')"></button>
+            <button class="mobile-tool blue" onclick="selectColor('#2449d8')"></button>
+            <button class="mobile-tool yellow" onclick="selectColor('#f5c400')"></button>
+            <button class="mobile-tool black" onclick="selectColor('#111111')"></button>
+            <button class="mobile-tool white" onclick="selectColor('#ffffff')"></button>
+        </div>
+    </section>
+
+    <aside class="panel right-panel">
+        <div class="panel-section">
+            <div class="panel-title">AÇÕES <span>−</span></div>
+            <button class="action" onclick="undo()">↶ &nbsp; DESFAZER</button>
+            <button class="action" onclick="redo()">↷ &nbsp; REFAZER</button>
+            <button class="action" onclick="clearBoard()">🗑 &nbsp; LIMPAR TUDO</button>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-title">CAMADAS <span>−</span></div>
+            <div id="layers"></div>
+        </div>
+
+        <div class="panel-section">
+            <button class="download" onclick="downloadPNG()">
+                ↓<br><br>
+                BAIXAR OBRA<br>
+                PNG
+            </button>
+        </div>
+    </aside>
+
+</main>
+
+<script>
+const artboard = document.getElementById("artboard");
+const layers = document.getElementById("layers");
+
+let selectedColor = "#ed1c24";
+let selectedElement = null;
+let elements = [];
+let history = [];
+let historyIndex = -1;
+let idCounter = 0;
+
+function toggleMenu(){
+    const nav = document.querySelector("nav");
+    const button = document.querySelector(".menu-toggle");
+    nav.classList.toggle("open");
+    const open = nav.classList.contains("open");
+    button.setAttribute("aria-expanded", open);
+}
+
+document.querySelectorAll("nav a").forEach(link => {
+    link.addEventListener("click", () => {
+        const nav = document.querySelector("nav");
+        const button = document.querySelector(".menu-toggle");
+        nav.classList.remove("open");
+        button.setAttribute("aria-expanded", "false");
+    });
+});
+
+function saveHistory(){
+    const state = elements.map(el => ({...el}));
+    history = history.slice(0, historyIndex + 1);
+    history.push(state);
+    historyIndex++;
+}
+
+function selectColor(color, button){
+    selectedColor = color;
+
+    document.querySelectorAll(".color")
+        .forEach(el => el.classList.remove("selected"));
+
+    if(button) button.classList.add("selected");
+
+    if(selectedElement){
+        const item = elements.find(e => e.id === selectedElement.dataset.id);
+        if(item){
+            item.color = color;
+            render();
+            selectElementById(item.id);
+            saveHistory();
+        }
+    }
+}
+
+function addShape(type){
+    const id = "element-" + (++idCounter);
+
+    const element = {
+        id,
+        type,
+        color:selectedColor,
+        x:20 + Math.random()*45,
+        y:20 + Math.random()*45,
+        width:type === "square" ? 20 : 30,
+        height:type === "square" ? 20 : 16,
+        rotation:0,
+        visible:true,
+        locked:false
+    };
+
+    elements.push(element);
+    render();
+    selectElementById(id);
+    saveHistory();
+}
+
+function addLine(direction){
+    const id = "element-" + (++idCounter);
+
+    const element = {
+        id,
+        type:"line",
+        direction,
+        color:"#111111",
+        x:20 + Math.random()*50,
+        y:20 + Math.random()*50,
+        width:direction === "horizontal" ? 35 : 1,
+        height:direction === "vertical" ? 35 : 1,
+        visible:true,
+        locked:false
+    };
+
+    elements.push(element);
+    render();
+    selectElementById(id);
+    saveHistory();
+}
+
+function render(){
+    artboard.innerHTML = "";
+
+    elements.forEach(item => {
+        if(!item.visible) return;
+
+        const el = document.createElement("div");
+        el.dataset.id = item.id;
+        el.classList.add("element");
+
+        el.style.left = item.x + "%";
+        el.style.top = item.y + "%";
+        el.style.width = item.width + "%";
+        el.style.height = item.height + "%";
+        el.style.background = item.color;
+
+        if(item.type === "square" || item.type === "rectangle"){
+            el.classList.add("shape");
+        } else {
+            el.classList.add("line", item.direction);
+        }
+
+        /*
+         * AGORA TODAS AS PEÇAS TÊM ALÇA DE REDIMENSIONAMENTO,
+         * inclusive as linhas.
+         */
+        const resize = document.createElement("div");
+        resize.className = "resize-handle";
+        el.appendChild(resize);
+
+        resize.addEventListener("mousedown", startResize);
+        resize.addEventListener("touchstart", startResize, {passive:false});
+
+        el.addEventListener("mousedown", startDrag);
+        el.addEventListener("touchstart", startDrag, {passive:false});
+
+        el.addEventListener("click", e => {
+            e.stopPropagation();
+            selectElement(el);
+        });
+
+        artboard.appendChild(el);
+    });
+
+    updateLayers();
+}
+
+function selectElement(el){
+    document.querySelectorAll(".element")
+        .forEach(e => e.classList.remove("selected"));
+
+    el.classList.add("selected");
+    selectedElement = el;
+}
+
+function selectElementById(id){
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if(el) selectElement(el);
+}
+
+let dragging = false;
+let dragStartX, dragStartY;
+let originalX, originalY;
+
+function startDrag(e){
+    if(e.target.classList.contains("resize-handle")) return;
+
+    const id = e.currentTarget.dataset.id;
+    const item = elements.find(e => e.id === id);
+
+    if(!item || item.locked) return;
+
+    selectElement(e.currentTarget);
+
+    dragging = true;
+
+    const point = getPoint(e);
+    dragStartX = point.x;
+    dragStartY = point.y;
+
+    originalX = item.x;
+    originalY = item.y;
+
+    e.preventDefault();
+}
+
+function moveDrag(e){
+    if(!dragging || !selectedElement) return;
+
+    const id = selectedElement.dataset.id;
+    const item = elements.find(e => e.id === id);
+    if(!item) return;
+
+    const point = getPoint(e);
+    const rect = artboard.getBoundingClientRect();
+
+    const dx = ((point.x - dragStartX) / rect.width) * 100;
+    const dy = ((point.y - dragStartY) / rect.height) * 100;
+
+    item.x = Math.max(0, Math.min(100 - item.width, originalX + dx));
+    item.y = Math.max(0, Math.min(100 - item.height, originalY + dy));
+
+    render();
+    selectElementById(id);
+}
+
+function endDrag(){
+    if(dragging){
+        dragging = false;
+        saveHistory();
+    }
+}
+
+let resizing = false;
+let resizeStartX, resizeStartY;
+let originalWidth, originalHeight;
+
+function startResize(e){
+    e.stopPropagation();
+
+    if(!selectedElement) return;
+
+    const id = selectedElement.dataset.id;
+    const item = elements.find(e => e.id === id);
+
+    if(!item || item.locked) return;
+
+    resizing = true;
+
+    const point = getPoint(e);
+    resizeStartX = point.x;
+    resizeStartY = point.y;
+
+    originalWidth = item.width;
+    originalHeight = item.height;
+
+    e.preventDefault();
+}
+
+function moveResize(e){
+    if(!resizing || !selectedElement) return;
+
+    const id = selectedElement.dataset.id;
+    const item = elements.find(e => e.id === id);
+
+    if(!item) return;
+
+    const rect = artboard.getBoundingClientRect();
+    const point = getPoint(e);
+
+    const dx = ((point.x - resizeStartX) / rect.width) * 100;
+    const dy = ((point.y - resizeStartY) / rect.height) * 100;
+
+    /*
+     * LINHA VERTICAL:
+     * só aumenta/diminui a altura.
+     */
+    if(item.type === "line" && item.direction === "vertical"){
+        item.height = Math.max(
+            3,
+            Math.min(100 - item.y, originalHeight + dy)
+        );
+    }
+
+    /*
+     * LINHA HORIZONTAL:
+     * só aumenta/diminui a largura.
+     */
+    else if(item.type === "line" && item.direction === "horizontal"){
+        item.width = Math.max(
+            3,
+            Math.min(100 - item.x, originalWidth + dx)
+        );
+    }
+
+    /*
+     * FORMAS:
+     * largura e altura podem ser alteradas.
+     */
+    else{
+        item.width = Math.max(
+            4,
+            Math.min(100 - item.x, originalWidth + dx)
+        );
+
+        item.height = Math.max(
+            4,
+            Math.min(100 - item.y, originalHeight + dy)
+        );
+    }
+
+    render();
+    selectElementById(id);
+}
+
+function endResize(){
+    if(resizing){
+        resizing = false;
+        saveHistory();
+    }
+}
+
+document.addEventListener("mousemove", moveDrag);
+document.addEventListener("mousemove", moveResize);
+document.addEventListener("mouseup", endDrag);
+document.addEventListener("mouseup", endResize);
+
+document.addEventListener("touchmove", moveDrag, {passive:false});
+document.addEventListener("touchmove", moveResize, {passive:false});
+document.addEventListener("touchend", endDrag);
+document.addEventListener("touchend", endResize);
+
+function getPoint(e){
+    if(e.touches && e.touches.length){
+        return {
+            x:e.touches[0].clientX,
+            y:e.touches[0].clientY
+        };
+    }
+
+    return {
+        x:e.clientX,
+        y:e.clientY
+    };
+}
+
+function updateLayers(){
+    layers.innerHTML = "";
+
+    [...elements].reverse().forEach(item => {
+        const layer = document.createElement("div");
+        layer.className = "layer";
+
+        const color = document.createElement("div");
+        color.className = "layer-color";
+        color.style.background = item.color;
+
+        const name = document.createElement("div");
+        name.className = "layer-name";
+        name.textContent =
+            item.type === "line"
+            ? "Linha " + item.direction
+            : item.type === "square"
+            ? "Quadrado"
+            : "Retângulo";
+
+        const eye = document.createElement("button");
+        eye.innerHTML = item.visible ? "◉" : "○";
+
+        eye.onclick = e => {
+            e.stopPropagation();
+            item.visible = !item.visible;
+            render();
+            saveHistory();
+        };
+
+        const lock = document.createElement("button");
+        lock.innerHTML = item.locked ? "🔒" : "♧";
+
+        lock.onclick = e => {
+            e.stopPropagation();
+            item.locked = !item.locked;
+            updateLayers();
+        };
+
+        layer.appendChild(color);
+        layer.appendChild(name);
+        layer.appendChild(eye);
+        layer.appendChild(lock);
+
+        layer.onclick = () => selectElementById(item.id);
+
+        layers.appendChild(layer);
+    });
+}
+
+function deleteSelected(){
+    if(!selectedElement) return;
+
+    const id = selectedElement.dataset.id;
+
+    elements = elements.filter(e => e.id !== id);
+
+    selectedElement = null;
+    render();
+    saveHistory();
+}
+
+function clearBoard(){
+    if(elements.length === 0) return;
+
+    if(!confirm("Deseja apagar toda a obra?")) return;
+
+    elements = [];
+    selectedElement = null;
+    render();
+    saveHistory();
+}
+
+function undo(){
+    if(historyIndex <= 0) return;
+
+    historyIndex--;
+
+    elements = history[historyIndex].map(el => ({...el}));
+
+    selectedElement = null;
+    render();
+}
+
+function redo(){
+    if(historyIndex >= history.length - 1) return;
+
+    historyIndex++;
+
+    elements = history[historyIndex].map(el => ({...el}));
+
+    selectedElement = null;
+    render();
+}
+
+document.addEventListener("keydown", e => {
+    if(e.key === "Delete" || e.key === "Backspace"){
+        deleteSelected();
+    }
+
+    if(e.ctrlKey && e.key.toLowerCase() === "z"){
+        e.preventDefault();
+        undo();
+    }
+
+    if(e.ctrlKey && e.key.toLowerCase() === "y"){
+        e.preventDefault();
+        redo();
+    }
+});
+
+artboard.addEventListener("click", () => {
+    document.querySelectorAll(".element")
+        .forEach(e => e.classList.remove("selected"));
+
+    selectedElement = null;
+});
+
+function downloadPNG(){
+    const rect = artboard.getBoundingClientRect();
+    const scale = 2;
+
+    const canvas = document.createElement("canvas");
+
+    canvas.width = rect.width * scale;
+    canvas.height = rect.height * scale;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.scale(scale, scale);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, rect.width, rect.height);
+
+    elements.forEach(item => {
+        if(!item.visible) return;
+
+        ctx.fillStyle = item.color;
+
+        const x = item.x / 100 * rect.width;
+        const y = item.y / 100 * rect.height;
+        const width = item.width / 100 * rect.width;
+        const height = item.height / 100 * rect.height;
+
+        if(item.type === "line"){
+            ctx.fillRect(x, y, width, height);
+        }else{
+            ctx.fillRect(x, y, width, height);
+
+            ctx.strokeStyle = "#111";
+            ctx.lineWidth = 4;
+
+            ctx.strokeRect(x, y, width, height);
+        }
+    });
+
+    const link = document.createElement("a");
+
+    link.download = "minha-obra-neoplasticista.png";
+    link.href = canvas.toDataURL("image/png");
+
+    link.click();
+}
+
+saveHistory();
+</script>
+
+</body>
+</html>
